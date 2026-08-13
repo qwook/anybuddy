@@ -1,0 +1,6 @@
+anytype-heart/
+protos/
+dist/
+node_modules/
+.env
+token

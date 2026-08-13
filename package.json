@@ -1,0 +1,36 @@
+{
+  "name": "anybuddy",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "A simple example library built by tsdown",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "prepublishOnly": "npm run build",
+    "meep": "tsx --env-file=.env examples/simple.ts",
+    "proto": "mkdir -p ./src/proto && protoc --ts_out ./src/proto --proto_path ./protos ./protos/pb/protos/*.proto ./protos/pkg/lib/pb/model/protos/*.proto"
+  },
+  "devDependencies": {
+    "@protobuf-ts/plugin": "^2.11.1",
+    "@types/node": "^26.2.0",
+    "protoc": "^35.1.0",
+    "tsdown": "^0.22.5",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  },
+  "dependencies": {
+    "@protobuf-ts/grpcweb-transport": "^2.11.1",
+    "@protobuf-ts/runtime": "^2.11.1",
+    "@protobuf-ts/runtime-rpc": "^2.11.1",
+    "google-protobuf": "^4.0.2",
+    "grpc-web": "^2.0.2"
+  }
+}
