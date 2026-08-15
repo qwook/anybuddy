@@ -19,11 +19,12 @@ import {
   Block_Content_Dataview_Filter_Condition,
   Block_Content_Dataview_Sort,
   Block_Content_File_Type,
+  Block_Content_Layout_Style,
   Detail,
   Layout,
   ObjectType_Layout,
   ObjectView_DetailsSet,
-  SmartBlockType,
+  SmartBlockType
 } from "./proto/pkg/lib/pb/model/protos/models";
 import LaterVille from "./utils/laterville";
 import { ListValue, Value } from "./proto/google/protobuf/struct";
@@ -264,6 +265,49 @@ export default class AnyBuddy extends EventTarget {
     return response.response;
   }
 
+  async getHomepage(spaceId: string) {
+    this.checkToken();
+
+    const spaceSearch = await this.clientCommands.objectSearch(
+      Rpc_Object_Search_Request.create({
+        spaceId: this.techSpaceId,
+        filters: [
+          Block_Content_Dataview_Filter.create({
+            relationKey: "targetSpaceId",
+            condition: Block_Content_Dataview_Filter_Condition.Equal,
+            value: {
+              kind: {
+                oneofKind: "stringValue",
+                stringValue: spaceId,
+              },
+            },
+          }),
+        ],
+        // keys: ["targetSpaceId", "name", "spaceLocalStatus"],
+      }),
+      { meta: { token: this.token } },
+    );
+
+    const homepageId =
+      spaceSearch.response.records[0].fields.homepage.kind.stringValue;
+
+    const object = await this.clientCommands.objectOpen(
+      Rpc_Object_Open_Request.create({
+        objectId: homepageId,
+      }),
+      { meta: { token: this.token } },
+    );
+
+    await this.clientCommands.objectClose(
+      Rpc_Object_Open_Request.create({
+        objectId: homepageId,
+      }),
+      { meta: { token: this.token } },
+    );
+
+    return object;
+  }
+
   async getDashboard(spaceId: string) {
     this.checkToken();
     let response = await this.clientCommands.objectSearch(
@@ -385,8 +429,8 @@ export default class AnyBuddy extends EventTarget {
       { meta: { token: this.token } },
     );
 
-    if (object.response.error.code === 1) {
-      await this.clientCommands.objectOpen(
+    if (object.response.error?.code === 1) {
+      object = await this.clientCommands.objectOpen(
         Rpc_Object_Open_Request.create({
           spaceId: this.techSpaceId,
           objectId: objectId,
@@ -496,3 +540,5 @@ export default class AnyBuddy extends EventTarget {
     //Images: bafyreihkrinznmo2x2b7m4xcekspxxzl6hav7zjzjdfiawirkztpqx2t7i
   }
 }
+
+// Block_Content_Layout_Style.Div
